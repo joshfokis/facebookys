@@ -1,0 +1,58 @@
+{% extends 'yardsale/base.html' %}
+
+{%block content %}
+        <div class="list-warning">
+            <p><h1>{{ warn.follower }}</h1></p>
+            <form method="POST" class="followingform">
+                {% csrf_token %}
+                {{ form }}
+                <input class="button" type="submit" value="Apply" />
+            </form>
+            <!-- <a href="{% url 'follower_edit' pk=warn.pk %}"> -->
+            {% if warn.following %}
+                Following
+            {% else %}
+                Blocked
+            {% endif %}
+            </a>
+            <br></br>
+            <br></br>
+        </div>
+        <div>
+            {% for warns in warn.warnings.all %}
+                <p>Posted:
+                {{ warns.publish_date }}
+                {{ warns.author }}</p>
+                    {% if warns.edited_date %}
+                    Edited:
+                        {{ warns.edited_date }}
+                        {{ warns.editor }}
+                    {% endif %}    
+                <a href="{% url 'edit_warn' pk=warns.pk %}">EDIT</a>
+                <p>{{ warns.WarningType }}</p>
+                <p>{{ warns.descript }}</p>
+                {% if warns.image %}
+                <p><a href={{ warns.image.url }}>screenshot</a>
+                    {% if warns.image2 %}
+                    <a href={{ warns.image2.url }}>screenshot</a></p>
+                    {% endif %}
+                        {% if warns.image3 %}
+                        <a href={{ warns.image3.url }}>screenshot</a>
+                        {% endif %}
+                            {% if warns.image4 %}
+                            <a href={{ warns.image4.url }}>screenshot</a>
+                            {% endif %}
+                                {% if warns.image5 %}
+                                <a href={{ warns.image5.url }}>screenshot</a></p>
+                                {% endif %}
+                {% else %}
+                <p>No screenshot available.</p>
+                {% endif %}
+                <br></br>
+            {% endfor %}
+            <br></br>
+            <a href="{% url 'new_warn' pk=warn.pk %}">
+                ADD NEW
+            </a>
+        </div>
+{% endblock content %}

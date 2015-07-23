@@ -1,0 +1,9 @@
+{% extends 'yardsale/base.html' %}
+    {% block content %}
+        <p><h1>{{ warn.follower }}</h1></p>
+            <form method="POST" class="newfollowerform">
+                {% csrf_token %}
+                {{ form }}
+            <input class="button" type="submit" value="Apply" />
+        </form>
+    {% endblock %}
