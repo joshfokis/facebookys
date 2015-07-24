@@ -2,20 +2,20 @@ from django.shortcuts import render, get_object_or_404, redirect, render_to_resp
 from django.utils import timezone
 from django.core.context_processors import csrf
 from .models import Followers, Warning
-from .forms import AddWarningForm, FollowingForm, NewFollowerForm
+from .forms import WarningForm, FollowingForm, FollowerForm
 # Create your views here.
 
 def follower_list(request):   
     args = {}
     args.update(csrf(request))
     args['names'] =Followers.objects.all().order_by('follower')
-    args['form'] = NewFollowerForm() 
+    args['form'] = FollowerForm() 
     if request.method == "POST":
-        form = NewFollowerForm(request.POST)
+        form = FollowerForm(request.POST)
         form.save()
         return redirect('home')
     else:
-        form = NewFollowerForm()
+        form = FollowerForm()
     
     return render_to_response('yardsale/followers_list.html', args)
 
@@ -45,11 +45,11 @@ def follower_edit(request, pk):
     return render(request, 'yardsale/follower_edit.html', {'warn':warn, 'form':form})
 
 def new_warn(request, pk):
-    print(pk)
+    header = "<h2>Add Warning</h2>"
 #     warn = get_object_or_404(Warning, pk=pk)
     fop = get_object_or_404(Followers, pk=pk)
     if request.method == "POST":
-        form = AddWarningForm(request.POST, request.FILES)
+        form = WarningForm(request.POST, request.FILES)
         if form.is_valid():
             postwarning = form.save(commit=False)
             postwarning.author = request.user
@@ -58,13 +58,14 @@ def new_warn(request, pk):
             postwarning.save()
             return redirect('yardsale.views.follower_warnings', pk=fop.pk)
     else:
-        form = AddWarningForm()
-    return render(request, 'yardsale/addwarning.html', {'form':form, 'fop':fop})
+        form = WarningForm()
+    return render(request, 'yardsale/addwarning.html', {'form':form, 'fop':fop, 'header':header})
 
 def edit_warn(request, pk):
+    header = "<h2>Edit Warning</h2>"
     warn = get_object_or_404(Warning, pk=pk)
     if request.method == "POST":
-        form = AddWarningForm(request.POST, request.FILES, instance=warn)
+        form = WarningForm(request.POST, request.FILES, instance=warn)
         if form.is_valid():
             postwarning = form.save(commit=False)
             postwarning.person = warn.person
@@ -73,8 +74,8 @@ def edit_warn(request, pk):
             postwarning.save()
             return redirect('yardsale.views.follower_warnings', pk=warn.pk)
     else:
-        form = AddWarningForm(instance=warn)
-    return render(request, 'yardsale/addwarning.html', {'form':form})
+        form = WarningForm(instance=warn)
+    return render(request, 'yardsale/addwarning.html', {'form':form, 'header':header})
 
 def search_names(request):
     if request.method == "POST":

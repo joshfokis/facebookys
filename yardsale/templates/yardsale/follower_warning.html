@@ -14,23 +14,19 @@
                     <input class="button" type="submit" value="Apply" />
                 </form>
                 <br></br>
+                <div class="warning-list">
                 {% for warns in warn.warnings.all %}
                     Posted:  {{ warns.publish_date }}   Posted By:  {{ warns.author }}
                 {% if warns.edited_date %}
                     Edited:   {{ warns.edited_date }} Edited By:   {{ warns.editor }}
                 {% endif %}    
                 <a href="{% url 'edit_warn' pk=warns.pk %}">EDIT</a>
-                <br></br>
-                <p>Warning Type:
-                <div class="warningtype">
-                    {{ warns.WarningType }}
-                </div>
-                </p>
+                <p><div class="warningtype">Warning Type: {{ warns.WarningType }}</div></p>
                 Description:  
                 <div class="description">
                     {{ warns.descript }}
                 </div>
-                <br></br>
+                <div class="images-list">
                 {% if warns.image %}
                     <a href={{ warns.image.url }}>screenshot</a>
                     {% if warns.image2 %}
@@ -48,8 +44,10 @@
                 {% else %}
                     No screenshot available.
                 {% endif %}
-                {% endfor %}
+                </div>
                 <br></br>
+                {% endfor %}
+                </div>
             <a href="{% url 'new_warn' pk=fop.pk %}">
             ADD NEW
             </a>

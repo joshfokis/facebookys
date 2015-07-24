@@ -1,11 +1,37 @@
 {% extends 'yardsale/base.html' %}
     {% block content %}
     <div class="container">
+
+        
+        <div class="col-md-4">
+        <p>{{ header |safe }}</p>
         <form method="POST" class="addwarningform" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
-            <input class="button" type="submit" value="Save" />
-            <button type="button" class="cancel">Cancel</button>
+            
+            <p>{{ form.descript.label }}</p>
+            {{ form.descript }}
+            <p>{{ form.WarningType.label }}  {{ form.WarningType }}<p>
+            <!-- <br></br> -->
+            <p>{{ form.image.label }}</p>
+            <div class="image">
+                {{ form.image }}
+            </div>
+            <div class="image2 hidden">
+                {{ form.image2 }}
+            </div>
+            <div class="image3 hidden">
+                {{ form.image3 }}
+            </div>
+            <div class="image4 hidden">
+                {{ form.image4 }}
+            </div>
+            <div class="image5 hidden">
+                {{ form.image5 }}
+            </div>
+            <br></br>
+            <p><input class="button" type="submit" value="Save" />
+            <button type="button" class="cancel">Cancel</button></p>
         </form>
+        </div>
     </div>    
     {% endblock %}
