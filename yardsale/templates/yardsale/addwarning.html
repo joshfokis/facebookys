@@ -1,9 +1,11 @@
 {% extends 'yardsale/base.html' %}
     {% block content %}
+    <div class="container">
         <form method="POST" class="addwarningform" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <input class="button" type="submit" value="Save" />
             <button type="button" class="cancel">Cancel</button>
         </form>
+    </div>    
     {% endblock %}

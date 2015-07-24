@@ -1,35 +1,36 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.utils import timezone
+from django.core.context_processors import csrf
 from .models import Followers, Warning
 from .forms import AddWarningForm, FollowingForm, NewFollowerForm
 # Create your views here.
 
-def follower_list(request):
-    names = Followers.objects.all()
+def follower_list(request):   
+    args = {}
+    args.update(csrf(request))
+    args['names'] =Followers.objects.all().order_by('follower')
+    args['form'] = NewFollowerForm() 
     if request.method == "POST":
         form = NewFollowerForm(request.POST)
         form.save()
         return redirect('home')
     else:
         form = NewFollowerForm()
-    return render(request, 'yardsale/followers_list.html', {'names': names, 'form':form})
+    
+    return render_to_response('yardsale/followers_list.html', args)
 
 def follower_warnings(request, pk):
     warn = get_object_or_404(Followers, pk=pk)
-#     if request.method == "POST":
-#         form = FollowingForm(request.POST, instance=warn)
-#         fol = form.save(commit=False)
-#         fol.following = warn.following
-#         fol.save()
-#         return redirect('yardsale.views.follower_warnings', pk=warn.pk)
-#     else:
-#         form = FollowingForm(instance=warn)
-#         return render(request, 'yardsale/follower_warning.html', {'warn':warn, 'form':form})
-    return render(request, 'yardsale/follower_warning.html', {'warn':warn})
-
-def password_change_done(request):
-    complete = "Your password has been changed."
-    return render(request, 'registration/completed.html', {'complete':complete})
+    fop = get_object_or_404(Followers, pk=warn.pk)
+    if request.method == "POST":
+        form = FollowingForm(request.POST, instance=warn)
+        fol = form.save(commit=False)
+        fol.following = warn.following
+        fol.save()
+        return redirect('yardsale.views.follower_warnings', pk=fop.pk)
+    else:
+        form = FollowingForm(instance=warn)
+    return render(request, 'yardsale/follower_warning.html', {'warn':warn, 'fop':fop, 'form':form})
 
 def follower_edit(request, pk):
     warn = get_object_or_404(Followers, pk=pk)
@@ -41,29 +42,24 @@ def follower_edit(request, pk):
         return redirect('yardsale.views.follower_warnings', pk=warn.pk)
     else:
         form = FollowingForm()
-        return render(request, 'yardsale/follower_edit.html', {'warn':warn, 'form':form})
+    return render(request, 'yardsale/follower_edit.html', {'warn':warn, 'form':form})
 
 def new_warn(request, pk):
     print(pk)
-    warn = get_object_or_404(Warning, pk=pk)
-    fop = Followers.objects.get(pk=warn.person_id)
+#     warn = get_object_or_404(Warning, pk=pk)
+    fop = get_object_or_404(Followers, pk=pk)
     if request.method == "POST":
         form = AddWarningForm(request.POST, request.FILES)
         if form.is_valid():
             postwarning = form.save(commit=False)
             postwarning.author = request.user
             postwarning.person = fop
-            print(warn.person, warn, fop)
-            print('pk ',warn.pk)
             postwarning.publish_date = timezone.now()
-            postwarning.warn = warn
-            print(postwarning.warn)
             postwarning.save()
-            return redirect('yardsale.views.follower_warnings', pk=warn.pk)
+            return redirect('yardsale.views.follower_warnings', pk=fop.pk)
     else:
-        print(pk)
         form = AddWarningForm()
-    return render(request, 'yardsale/addwarning.html', {'form':form})
+    return render(request, 'yardsale/addwarning.html', {'form':form, 'fop':fop})
 
 def edit_warn(request, pk):
     warn = get_object_or_404(Warning, pk=pk)
@@ -79,4 +75,15 @@ def edit_warn(request, pk):
     else:
         form = AddWarningForm(instance=warn)
     return render(request, 'yardsale/addwarning.html', {'form':form})
+
+def search_names(request):
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        if search_text is not None and search_text !=u"":
+            search_text = request.POST['search_text']
+            follower_list = Followers.objects.filter(follower__icontains=search_text)
+            print(search_text)
+        else:
+            follower_list = []
+        return render(request, 'yardsale/ajax_search.html', {'follower_list':follower_list})
 

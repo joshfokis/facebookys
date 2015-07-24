@@ -1,21 +1,19 @@
 {% extends 'yardsale/base.html' %}
 
 {%block content %}
-    <button value="Add new follower">Add new Follower</button>
-        <div class="newfollowerform hidden">
-        <form method="POST" class="newfollowerform">
-            {% csrf_token %}
-            {{ form }}
-        <input class="button" type="submit" value="Apply" />
+    <div class="container">
+        <div class="searchlist">
+            <ul id="search-results">
+                
+            </ul>
         </div>
-        <div class="searchbox">
-            <input type="text" class="search" />
+        <div class="followers col-sm-12">
+            <ul class="followerlist">
+            {% for name in names %}
+                <div class="col-sm-4"><h3><a href="{% url 'yardsale.views.follower_warnings' pk=name.pk %}">{{ name }}</a></h3><h5>Warnings: {{ name.warnings.count }}</h5></div>
+            {% endfor %}
+            </ul>
         </div>
-    {% for name in names %}
-        <div class="followers">
-        <ul class="followerlist">
-            <li><a href={% url 'yardsale.views.follower_warnings' pk=name.pk %}>{{ name }}</a> Warnings: {{ name.warnings.count }}</li>
-        </ul>
-        </div>
-    {% endfor %}
+    </div>
+
 {% endblock content %}

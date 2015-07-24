@@ -1,0 +1,10 @@
+{% if follower_list.count > 0 %}
+        <div class="followers col-sm-12">
+        {% for nam in follower_list %}
+            <div class="col-sm-4"><h3><a href="{% url 'warning' pk=nam.pk %}">{{ nam }}</a></h3> <h5>Warnings: {{ nam.warnings.count }}</h5></div>
+        {% endfor %}
+        </div>
+{% elif follower_list.count = 0 %}
+    <li>No names found.</li>
+
+{% endif %}
